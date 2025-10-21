@@ -12,11 +12,11 @@ FROM quay.io/jupyter/scipy-notebook:${JUPYTER_TAG} AS SCIPY_NOTEBOOK
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 WORKDIR $HOME
-
+ENV RUNTIME=docker
 # Define environment variable
 ENV HOME=/home/jovyan
 
-COPY north_notebook/requirements.in .
+# COPY north_notebook/requirements.in .
 
 # Bring uv from uv_image
 COPY --from=uv_image /uv /bin/uv
@@ -25,10 +25,17 @@ RUN uv venv ${HOME}/.venv --python=${PYTHON_VERSION} \
     && source ${HOME}/.venv/bin/activate \
     && uv pip install --upgrade pip
 
-RUN uv pip install -r requirements.in
+# RUN uv pip install -r requirements.in
+COPY src ./src
+COPY pyproject.toml .
+COPY README.md .
+COPY LICENSE .
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync
+
+# RUN --mount=type=cache,target=/root/.cache/uv \
+#     --mount=source=.git,target=.git,type=bind \
+#     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+RUN uv pip install .
+
 # After instalation removing the requirement file
-RUN rm requirements.in
+# RUN rm requirements.in
