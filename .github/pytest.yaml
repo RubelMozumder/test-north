@@ -9,10 +9,38 @@ name: Pytest
 on:
   push:
     branches:
-      - main
       - "*"
   pull_request:
     branches:
       - main
 
 jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Setup uv with Python ${{ matrix.python-version }}
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Plugins
+        run: |
+          uv pip install -e ".[dev]"
+      - name: Test with pytest
+        run: |
+          find . -type d -name tests | xargs pytest tests/
+
+      - name: Submit coverage to Coveralls
+        if: ${{ matrix.python-version == '3.12' }}
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./cobertura.xml
