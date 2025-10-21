@@ -1,9 +1,3 @@
-# Pytest Workflow
-#
-# 1. Set repository environment
-# 2. prepare uv environment installing dependencies
-# 3. Run tests with pytest
-
 name: Pytest
 
 on:
