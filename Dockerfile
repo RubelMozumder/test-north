@@ -1,41 +1,28 @@
-# syntax=docker/dockerfile:1.6
 
 ARG JUPYTER_TAG=2025-10-20
 ARG UV_VERSION=0.7
-ARG PLUGIN_NAME=""
-ARG PYTHON_VERSION="3.11"
+ARG PLUGIN_NAME="PLUGIN"
 
-FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv_image
+FROM quay.io/jupyter/scipy-notebook:${JUPYTER_TAG} AS scipy_notebook
 
-FROM quay.io/jupyter/scipy-notebook:${JUPYTER_TAG} AS SCIPY_NOTEBOOK
 
+# https://github.com/hadolint/hadolint/wiki/DL4006
+# https://github.com/koalaman/shellcheck/wiki/SC3014
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-WORKDIR $HOME
-ENV RUNTIME=docker
 # Define environment variable
 ENV HOME=/home/jovyan
 
-# COPY north_notebook/requirements.in .
+COPY . ${HOME}/${PLUGIN_NAME}
 
-# Bring uv from uv_image
-COPY --from=uv_image /uv /bin/uv
+WORKDIR $HOME/${PLUGIN_NAME}
 
-RUN uv venv ${HOME}/.venv --python=${PYTHON_VERSION} \
-    && source ${HOME}/.venv/bin/activate \
-    && uv pip install --upgrade pip
+USER root
+RUN pip install .[north_dependencies]
 
-# RUN uv pip install -r requirements.in
-COPY src ./src
-COPY pyproject.toml .
-COPY README.md .
-COPY LICENSE .
+WORKDIR $HOME
 
+# remove the PLUGIN folder to reduce image size
+RUN rm -rf ${HOME}/${PLUGIN_NAME}
 
-# RUN --mount=type=cache,target=/root/.cache/uv \
-#     --mount=source=.git,target=.git,type=bind \
-#     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-RUN uv pip install .
-
-# After instalation removing the requirement file
-# RUN rm requirements.in
+USER "jovyan"
