@@ -2559,8 +2559,8 @@ sdist = { url = "https://files.pythonhosted.org/packages/eb/ee/97ee0b973d072702e
 
 [[package]]
 name = "nomad-lab"
-version = "1.3.17"
-source = { registry = "https://pypi.org/simple" }
+version = "1.3.18.dev190+g1717dd4b5"
+source = { git = "https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git?rev=north-tool-entry-point#1717dd4b5a50643e5b2ed8133c5e050ad6d6dce8" }
 dependencies = [
     { name = "ase" },
     { name = "bitarray" },
@@ -2600,10 +2600,6 @@ dependencies = [
     { name = "unidecode" },
     { name = "xarray", version = "2025.6.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "xarray", version = "2025.10.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/49/90/1d92fb4a052a8b4b830ef4a44134447569411b646f6588ef430ee0a1e87c/nomad_lab-1.3.17.tar.gz", hash = "sha256:2651fe88c988d9437be4f3e74b9987bfbc48c375f063242ba6a3d8826ebde9df", size = 2191934, upload-time = "2025-08-25T12:22:43.173Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/53/bb/21622fe75fc2aa63fb5d690cbcbd3b498b7c8a27f9ebdc717ab3e5c0dab7/nomad_lab-1.3.17-py3-none-any.whl", hash = "sha256:e05325df0764191fa2bace407b47319c8c5ef84d4d4781676b1244035c6d6104", size = 17989984, upload-time = "2025-08-26T07:56:37.127Z" },
 ]
 
 [[package]]
@@ -4509,7 +4505,7 @@ requires-dist = [
     { name = "jupyterlab", marker = "extra == 'north-dependencies'" },
     { name = "jupyterlab-h5web", extras = ["full"], marker = "extra == 'north-dependencies'", specifier = ">=7.1.1" },
     { name = "nodejs", marker = "extra == 'north-dependencies'" },
-    { name = "nomad-lab", specifier = ">=1.3.0" },
+    { name = "nomad-lab", git = "https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git?rev=north-tool-entry-point" },
     { name = "punx", marker = "extra == 'north-dependencies'", specifier = ">=0.2.5" },
     { name = "pynxtools-spm", specifier = ">=0.2.0" },
     { name = "pytest", marker = "extra == 'dev'" },
