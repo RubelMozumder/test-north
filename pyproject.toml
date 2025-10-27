@@ -38,7 +38,10 @@ dependencies = [
 Repository = "https://github.com/RubelMozumder/test-north"
 
 [project.optional-dependencies]
-dev = ["ruff", "pytest", "structlog"]
+dev = ["ruff", 
+       "pytest", 
+       "structlog", 
+       "coverage"]
 
 north_dependencies = [
     "h5glance>=0.8",

@@ -26,7 +26,6 @@ jobs:
                     - jupyter
                 include:
                     - service: jupyter
-                      target: jupyter
                       image_suffix: /jupyter
         steps:
             - uses: actions/checkout@v4
@@ -56,7 +55,6 @@ jobs:
                       JUPYTER_VERSION=${{ env.JUPYTER_VERSION }}
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
-                  target: ${{ matrix.target }}
                   push: true
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}

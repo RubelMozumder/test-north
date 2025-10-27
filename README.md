@@ -1,3 +1,6 @@
+![](https://github.com/RubelMozumder/test-north/actions/workflows/pytest.yml/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/RubelMozumder/test-north/badge.svg?branch=gitHubWorkflow)](https://coveralls.io/github/RubelMozumder/test-north?branch=gitHubWorkflow)
+
 # test-north
 
 Nomad example template
