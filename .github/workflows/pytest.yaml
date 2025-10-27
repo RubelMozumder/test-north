@@ -24,10 +24,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install Plugins
         run: |
-          uv pip install -e ".[dev]"
+          uv sync --all-extras
       - name: Test with pytest
         run: |
-          find . -type d -name tests | xargs pytest
+          find . -type d -name tests | xargs uv run --with coverage coverage run -m pytest -sv
 
       - name: Submit coverage to Coveralls
         uses: coverallsapp/github-action@v2
