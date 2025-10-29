@@ -1,7 +1,7 @@
 name: Build and publish docker images
 on:
     push:
-        branches: ["main"]
+        branches: ["main", "gitHubWorkflow"]
         tags: ["v*.*.*"]
     # Remove pull_request event it is just for test purpuses
     pull_request:
@@ -36,6 +36,7 @@ jobs:
                   ref: ${{ github.head_ref || github.ref_name }}
                   submodules: true
             - uses: docker/setup-buildx-action@v3
+
             - uses: docker/login-action@v3
               with:
                   registry: ${{ env.REGISTRY }}
@@ -49,7 +50,7 @@ jobs:
                   tags: |
                       type=ref,event=branch
                       type=ref,event=tag
-                      type=raw,value=latest_head_ref,enable=${{ github.head_ref == format('refs/heads/{0}', 'gitHubWorkflow')}}
+                      type=ref,event=pr
                       type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'gitHubWorkflow')}}
                   flavor: |
                       latest=auto
