@@ -3,6 +3,7 @@ on:
     push:
         branches: ["main"]
         tags: ["v*.*.*"]
+    # Remove pull_request event it is just for test purpuses
     pull_request:
         branches: ["main"]
 
@@ -46,6 +47,10 @@ jobs:
               uses: docker/metadata-action@v5
               with:
                   images: ${{ env.REGISTRY }}/${{ github.repository }}${{ matrix.image_suffix }}
+                  tags: |
+                      type=ref,event=branch
+                      type=ref,event=tag
+                      type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'gitHubWorkflow')}}
             - name: Build and push Docker image
               uses: docker/build-push-action@v5
               with:
