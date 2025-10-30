@@ -27,7 +27,7 @@ maintainers = [
 ]
 license = { file = "LICENSE" }
 dependencies = [
-    "nomad-lab@git+https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git@9e99b7bd8a88e77eb3850217ba78861bb0af31c8#egg=nomad",
+    "nomad-lab@git+https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git@north-tool-entry-point#egg=nomad",
     "python-magic-bin; sys_platform == 'win32'",
     "pynxtools-spm>=0.2.0",
     "click>=8.0.0",
