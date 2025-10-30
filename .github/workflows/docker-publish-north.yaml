@@ -59,6 +59,7 @@ jobs:
                       type=ref,event=tag
                       type=ref,event=pr,prefix=pr-
                       type=raw,evnet=branch,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'gitHubWorkflow') }}
+                      type=raw,evnet=branch,value=gitHubWorkflow,enable=${{ github.ref == format('refs/heads/{0}', 'gitHubWorkflow') }}
                   flavor: |
                       latest=auto
 
