@@ -12,6 +12,8 @@ env:
     UV_VERSION: 0.7
     PYTHON_VERSION: 3.12
     JUPYTER_VERSION: "2025-04-14"
+    IMAGE_PREFIX: /jupyter
+    SERVICES: jupyter
 
 permissions:
     packages: write
@@ -22,14 +24,16 @@ jobs:
     build:
         name: Build Docker Image
         runs-on: ubuntu-latest
-        strategy:
-            fail-fast: false
-            matrix:
-                service:
-                    - jupyter
-                include:
-                    - service: jupyter
-                      image_suffix: /jupyter
+        outputs:
+            tags: ${{ steps.meta.outputs.tags }} # list of tags
+        # strategy:
+        #     fail-fast: false
+        #     matrix:
+        #         service:
+        #             - jupyter
+        #         include:
+        #             - service: jupyter
+        #               image_suffix: /jupyter
         steps:
             - uses: actions/checkout@v4
               with:
@@ -42,17 +46,24 @@ jobs:
                   registry: ${{ env.REGISTRY }}
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN}}
+
+            # https://github.com/docker/metadata-action
             - name: Extract Docker metadata
               id: meta
               uses: docker/metadata-action@v5
               with:
-                  images: ${{ env.REGISTRY }}/${{ github.repository }}${{ matrix.image_suffix }}
+                  images: ${{ env.REGISTRY }}/${{ github.repository }}${{ env.IMAGE_PREFIX }}
+                  #
                   tags: |
                       type=ref,event=branch
                       type=ref,event=tag
                       type=ref,event=pr,prefix=pr-
+                      type=raw,evnet=branch,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'gitHubWorkflow') }}
                   flavor: |
                       latest=auto
+
+            # https://docs.docker.com/build/ci/github-actions/share-image-jobs/
+            # https://github.com/docker/build-push-action
             - name: Build and export to Docker
               uses: docker/build-push-action@v6
               with:
@@ -64,26 +75,27 @@ jobs:
                       JUPYTER_VERSION=${{ env.JUPYTER_VERSION }}
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
-                  push: true
+                  push: false
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
-
-            - name: Run test in Docker container
-              if: matrix.service == 'jupyter'
-              run: |
-                  docker run --rm ${{ steps.meta.outputs.tags }} /bin/bash -c "jupyter execute \$HOME/north_examples/STSExampleWithCustomization/CommandLineDataconverter.ipynb"
-
-            - name: Build and push Docker image
-              uses: docker/build-push-action@v6
+                  outputs: type=docker,dest=${{ runner.temp }}/${{ env.SERVICES }}.tar
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
               with:
-                  push: true
-                  tags: ${{ steps.meta.outputs.tags }}
-                  labels: ${{ steps.meta.outputs.labels }}
-            - name: Set image output
+                  name: docker-image
+                  path: ${{ runner.temp }}/${{ env.SERVICES }}.tar
+    test:
+        name: Test Docker Image
+        needs: build
+        runs-on: ubuntu-latest
+        # https://docs.docker.com/build/ci/github-actions/share-image-jobs/
+        steps:
+            - name: Download artifact
+              uses: actions/download-artifact@v4
+              with:
+                  name: docker-image
+                  path: ${{ runner.temp }}
+            - name: Load and test in Docker container
               run: |
-                  FIRST_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
-                  echo "${{ matrix.service }}_IMAGE=$FIRST_TAG" >> $GITHUB_ENV
-                  echo "## Tags, version, labels output"
-                  echo "IMAGE: $FIRST_TAG"
-                  echo "VERSION: ${{ steps.meta.outputs.version }}"
-                  echo "LABELS: ${{ steps.meta.outputs.labels }}"
+                  docker load -i ${{ runner.temp }}/${{ env.SERVICES }}.tar
+                  docker run --rm ${{ needs.build.outputs.tags }} /bin/bash -c "jupyter execute \$HOME/north_examples/STSExampleWithCustomization/CommandLineDataconverter.ipynb"
