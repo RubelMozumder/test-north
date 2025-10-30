@@ -39,7 +39,7 @@ jobs:
                   version: ${{ env.UV_VERSION }}
             - name: Check uv.lock
               run: |
-                  uv lock -U
+                  uv lock
                   if [[ git diff origin/main -- uv.lock ]]; then
                     echo "uv.lock is not up to date. Please run 'uv lock' and commit the changes."
                     exit 1
