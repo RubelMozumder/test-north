@@ -40,13 +40,10 @@ jobs:
             - name: Check uv.lock
               run: |
                   uv lock
-                  if [[ git diff origin/main -- uv.lock ]]; then
+                  if [[ `git diff origin/main -- uv.lock` ]]; then
                     echo "uv.lock is not up to date. Please run 'uv lock' and commit the changes."
                     exit 1
                   fi
-            - name: Check for lock file consistency
-              run: |
-                  uv check-lock
             - uses: docker/setup-buildx-action@v3
             # https://github.com/docker/metadata-action
             - name: Extract Docker metadata
