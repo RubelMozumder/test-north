@@ -4636,7 +4636,6 @@ north-dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "click" },
     { name = "click", specifier = ">=8.0.0" },
     { name = "coverage", marker = "extra == 'dev'" },
     { name = "h5glance", marker = "extra == 'north-dependencies'", specifier = ">=0.8" },
