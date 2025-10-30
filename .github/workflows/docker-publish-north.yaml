@@ -50,6 +50,7 @@ jobs:
                   tags: |
                       type=ref,event=branch
                       type=ref,event=tag
+                      type=ref,event=pr,prefix=pr-
                   flavor: |
                       latest=auto
             - name: Build and export to Docker
