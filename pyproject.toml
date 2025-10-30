@@ -31,7 +31,6 @@ dependencies = [
     "python-magic-bin; sys_platform == 'win32'",
     "pynxtools-spm>=0.2.0",
     "click>=8.0.0",
-    "click"
 ]
 
 [project.urls]
