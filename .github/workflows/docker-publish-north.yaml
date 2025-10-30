@@ -20,9 +20,10 @@ permissions:
     contents: read
     attestations: write
     id-token: write
+
 jobs:
     build:
-        name: Build Docker Image
+        name: Build Jupyter Image
         runs-on: ubuntu-latest
         outputs:
             tags: ${{ steps.meta.outputs.tags }} # list
@@ -61,7 +62,7 @@ jobs:
 
             # https://docs.docker.com/build/ci/github-actions/share-image-jobs/
             # https://github.com/docker/build-push-action
-            - name: Build and export to Docker
+            - name: Build and export to Jupyter image
               uses: docker/build-push-action@v6
               with:
                   context: .
@@ -79,10 +80,10 @@ jobs:
             - name: Upload artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: docker-image
+                  name: jupyter-image
                   path: ${{ runner.temp }}/${{ env.SERVICES }}.tar
     test_and_push_image:
-        name: Test Docker Image
+        name: Test Jupyter Image
         needs: build
         runs-on: ubuntu-latest
         # https://docs.docker.com/build/ci/github-actions/share-image-jobs/
@@ -90,10 +91,10 @@ jobs:
             - name: Download artifact
               uses: actions/download-artifact@v4
               with:
-                  name: docker-image
+                  name: jupyter-image
                   path: ${{ runner.temp }}
                   pattern: "!*.dockerbuild" # warning at https://github.com/docker/build-push-action?tab=readme-ov-file
-            - name: Load and test in Docker container
+            - name: Load and test in Jupyter container
               run: |
                   docker load -i ${{ runner.temp }}/${{ env.SERVICES }}.tar
                   RAW_TAGS="${{ needs.build.outputs.tags }}"
@@ -104,7 +105,7 @@ jobs:
                   registry: ${{ env.REGISTRY }}
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN}}
-            - name: Push Docker Image
+            - name: Push Jupyter Image
               run: |
                   RAW_TAGS="${{ needs.build.outputs.tags }}"
                   for TAG in $RAW_TAGS; do

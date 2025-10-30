@@ -25,8 +25,6 @@ COPY . ${HOME}/${PLUGIN_NAME}
 
 WORKDIR $HOME/${PLUGIN_NAME}
 
-USER root
-
 COPY --from=uv_image /uv /bin/uv
 
 RUN apt-get update \
@@ -45,7 +43,7 @@ RUN apt-get update \
 
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync
+    uv sync  --extra north_dependencies
 
 WORKDIR $HOME
 
