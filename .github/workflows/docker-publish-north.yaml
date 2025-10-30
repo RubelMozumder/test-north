@@ -96,8 +96,7 @@ jobs:
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN}}
             - name: Push Docker Image
-              uses: docker/build-push-action@v6
-              with:
-                  push: true
-                  tags: ${{ needs.build.outputs.tags }}
-                  labels: ${{ needs.build.outputs.labels }}
+              run: RAW_TAGS="${{ needs.build.outputs.tags }}"
+                  for TAG in $RAW_TAGS; do
+                  docker push "$TAG"
+                  done
