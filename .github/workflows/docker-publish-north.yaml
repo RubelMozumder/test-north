@@ -84,8 +84,6 @@ jobs:
         runs-on: ubuntu-latest
         # https://docs.docker.com/build/ci/github-actions/share-image-jobs/
         steps:
-            - name: Setup Repository
-              uses: actions/checkout@v4
             - name: Download artifact
               uses: actions/download-artifact@v4
               with:
