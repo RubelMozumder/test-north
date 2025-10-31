@@ -52,6 +52,7 @@ jobs:
                   tags: |
                       type=ref,event=tag
                       type=raw,value=main,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+                      type=raw,value=FixTestDataPath,enable=${{ github.ref == format('refs/heads/{0}', 'FixTestDataPath') }}
                   flavor: |
                       latest=auto
 
@@ -83,6 +84,8 @@ jobs:
         runs-on: ubuntu-latest
         # https://docs.docker.com/build/ci/github-actions/share-image-jobs/
         steps:
+            - name: Set Repository
+              uses: actions/checkout@v4
             - name: Download artifact
               uses: actions/download-artifact@v4
               with:
