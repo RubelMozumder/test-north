@@ -84,7 +84,7 @@ jobs:
         runs-on: ubuntu-latest
         # https://docs.docker.com/build/ci/github-actions/share-image-jobs/
         steps:
-            - name: Set Repository
+            - name: Setup Repository
               uses: actions/checkout@v4
             - name: Download artifact
               uses: actions/download-artifact@v4
@@ -101,7 +101,7 @@ jobs:
 
                   docker run \
                   --mount type=bind,src="$(pwd)/tests/data/north_test",dst="/home/jovyan/north_test" \
-                  --rm myimage:test /bin/bash -c "jupyter execute \$HOME/north_test/CommandLineDataconverter.ipynb"
+                  --rm $FIRST_TAG /bin/bash -c "jupyter execute \$HOME/north_test/CommandLineDataconverter.ipynb"
             - uses: docker/login-action@v3
               with:
                   registry: ${{ env.REGISTRY }}
