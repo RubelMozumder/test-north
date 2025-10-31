@@ -1,7 +1,8 @@
 [build-system]
-requires = ["setuptools>=61.0.0", "setuptools-scm>=8.0"]
+requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
-
+[tool.setuptools_scm]
+fallback_version = "0.0"
 [project]
 classifiers = [
     "Intended Audience :: Developers",
@@ -14,6 +15,7 @@ classifiers = [
 ]
 name = "test-north"
 description = "Nomad example template"
+# dyncamic = ["version"]
 version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -25,16 +27,33 @@ maintainers = [
 ]
 license = { file = "LICENSE" }
 dependencies = [
-    "nomad-lab>=1.3.0",
     "python-magic-bin; sys_platform == 'win32'",
-    "pynxtools-spm>=0.2.1"
+    "nomad-lab@git+https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git@north-tool-entry-point#egg=nomad",
+    "pynxtools-spm>=0.2.0",
+    "click>=8.0.0",
 ]
 
 [project.urls]
-Repository = "https://github.com/foo/test-north"
+Repository = "https://github.com/RubelMozumder/test-north"
 
 [project.optional-dependencies]
-dev = ["ruff", "pytest", "structlog"]
+dev = ["ruff", 
+       "pytest", 
+       "structlog", 
+       "coverage"]
+
+north_dependencies = [
+    "h5glance>=0.8",
+    "h5grove>=1.1.0",
+    "jupyterlab-h5web[full]>=7.1.1",
+    "jupyterlab",
+    "punx>=0.2.5",
+    "ipywidgets",
+    "nodejs",
+]
+
+[project.scripts]
+print_hello = "test_north.utils.utils:hello"
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
@@ -105,8 +124,6 @@ skip-magic-trailing-comma = false
 # Like Black, automatically detect the appropriate line ending.
 line-ending = "auto"
 
-[tool.setuptools]
-package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -117,6 +134,7 @@ schema_package_entry_point = "test_north.schema_packages:schema_package_entry_po
 normalizer_entry_point = "test_north.normalizers:normalizer_entry_point"
 app_entry_point = "test_north.apps:app_entry_point"
 example_upload_entry_point = "test_north.example_uploads:example_upload_entry_point"
+north_tool = "test_north.north_entry_points:north_tool"
 [tool.cruft]
 # Avoid updating workflow files, this leads to permissions issues
 skip = [".github/*"]

@@ -1,15 +1,9 @@
-# Pytest Workflow
-#
-# 1. Set repository environment
-# 2. prepare uv environment installing dependencies
-# 3. Run tests with pytest
-
 name: Pytest
 
 on:
   push:
-    branches:
-      - "*"
+    branches: ["main"]
+    tags: ["v*.*.*"]
   pull_request:
     branches:
       - main
@@ -24,22 +18,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
       - name: Setup uv with Python ${{ matrix.python-version }}
         uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Plugins
         run: |
-          uv pip install -e ".[dev]"
+          uv sync --all-extras
       - name: Test with pytest
         run: |
-          find . -type d -name tests | xargs pytest tests/
+          uv run --with coverage coverage run -m pytest -sv tests
+          coverage xml -o cobertura.xml
 
       - name: Submit coverage to Coveralls
-        if: ${{ matrix.python-version == '3.12' }}
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
