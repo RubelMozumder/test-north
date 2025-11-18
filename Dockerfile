@@ -43,7 +43,7 @@ RUN apt-get update \
 
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync  --extra north_dependencies
+    uv sync  --extra north_dependencies --extra nomad
 
 WORKDIR $HOME
 
