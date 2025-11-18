@@ -37,6 +37,7 @@ dependencies = [
 Repository = "https://github.com/RubelMozumder/test-north"
 
 [project.optional-dependencies]
+nomad = [ "nomad-lab@git+https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git@north-tool-entry-point#egg=nomad",]
 dev = ["ruff", 
        "pytest", 
        "structlog", 
