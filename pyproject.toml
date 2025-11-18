@@ -28,6 +28,7 @@ maintainers = [
 license = { file = "LICENSE" }
 dependencies = [
     "python-magic-bin; sys_platform == 'win32'",
+    "nomad-lab@git+https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git@north-tool-entry-point#egg=nomad",
     "pynxtools-spm>=0.2.0",
     "click>=8.0.0",
 ]
@@ -36,6 +37,7 @@ dependencies = [
 Repository = "https://github.com/RubelMozumder/test-north"
 
 [project.optional-dependencies]
+nomad = [ "nomad-lab@git+https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git@north-tool-entry-point#egg=nomad",]
 dev = ["ruff", 
        "pytest", 
        "structlog", 
