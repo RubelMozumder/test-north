@@ -43,7 +43,7 @@ tool2 = NORTHTool(
     display_name='SPM-jupyter',
 )
 
-north_tool2 = NorthToolEntryPoint(id='spm-jupyter-xps', north_tool=tool2)
+north_tool2 = NorthToolEntryPoint(id='jupyter', north_tool=tool2)
 
 
 tool3 = NORTHTool(
