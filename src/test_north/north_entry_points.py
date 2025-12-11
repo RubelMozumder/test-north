@@ -11,7 +11,9 @@ tool = NORTHTool(
     icon='logo/jupyter.svg',
     image_pull_policy='Always',
     default_url='/lab',
-    maintainer=[{'email': 'rubel.mozumder@physik.hu-berlin.de', 'name': 'Rubel Mozumder'}],
+    maintainer=[
+        {'email': 'rubel.mozumder@physik.hu-berlin.de', 'name': 'Rubel Mozumder'}
+    ],
     mount_path='/home/jovyan',
     path_prefix='lab/tree',
     privileged=False,
