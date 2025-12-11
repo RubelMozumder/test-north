@@ -30,11 +30,11 @@ jobs:
         with:
           ref: ${{ github.head_ref || github.ref_name }}
           submodules: true
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          version: ${{ env.UV_VERSION }}
+      # - name: Install the latest version of uv
+      #   uses: astral-sh/setup-uv@v7
+      #   with:
+      #     python-version: ${{ env.PYTHON_VERSION }}
+      #     version: ${{ env.UV_VERSION }}
       # - name: Check uv.lock
       #   run: |
       #       uv lock
