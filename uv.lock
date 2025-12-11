@@ -2569,8 +2569,8 @@ sdist = { url = "https://files.pythonhosted.org/packages/eb/ee/97ee0b973d072702e
 
 [[package]]
 name = "nomad-lab"
-version = "1.3.18.dev332+g9e99b7bd8"
-source = { git = "https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git?rev=north-tool-entry-point#9e99b7bd8a88e77eb3850217ba78861bb0af31c8" }
+version = "1.4.1.dev183+gb9bab2d6a"
+source = { git = "https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git?rev=develop#b9bab2d6ad06778a1a6dd95d17c0d291c8437418" }
 dependencies = [
     { name = "ase" },
     { name = "bitarray" },
@@ -2600,9 +2600,8 @@ dependencies = [
     { name = "pyinstrument" },
     { name = "pymatgen" },
     { name = "python-keycloak" },
-    { name = "python-magic" },
+    { name = "python-magic", marker = "sys_platform != 'win32'" },
     { name = "python-magic-bin", marker = "sys_platform == 'win32'" },
-    { name = "pytz" },
     { name = "pyyaml" },
     { name = "requests" },
     { name = "rfc3161ng" },
@@ -4648,7 +4647,7 @@ requires-dist = [
     { name = "jupyterlab", marker = "extra == 'north-dependencies'" },
     { name = "jupyterlab-h5web", extras = ["full"], marker = "extra == 'north-dependencies'", specifier = ">=7.1.1" },
     { name = "nodejs", marker = "extra == 'north-dependencies'" },
-    { name = "nomad-lab", marker = "extra == 'nomad'", git = "https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git?rev=north-tool-entry-point" },
+    { name = "nomad-lab", marker = "extra == 'nomad'", git = "https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git?rev=develop" },
     { name = "punx", marker = "extra == 'north-dependencies'", specifier = ">=0.2.5" },
     { name = "pynxtools-spm", specifier = ">=0.2.0" },
     { name = "pytest", marker = "extra == 'dev'" },
