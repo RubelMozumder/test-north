@@ -135,9 +135,9 @@ normalizer_entry_point = "test_north.normalizers:normalizer_entry_point"
 app_entry_point = "test_north.apps:app_entry_point"
 example_upload_entry_point = "test_north.example_uploads:example_upload_entry_point"
 north_tool = "test_north.north_entry_points:north_tool"
-north_tool2 = "test_north.north_entry_points:north_tool2"
-north_tool3 = "test_north.north_entry_points:north_tool3"
-north_tool4 = "test_north.north_entry_points:north_tool4"
+# north_tool2 = "test_north.north_entry_points:north_tool2"
+# north_tool3 = "test_north.north_entry_points:north_tool3"
+# north_tool4 = "test_north.north_entry_points:north_tool4"
 [tool.cruft]
 # Avoid updating workflow files, this leads to permissions issues
 skip = [".github/*"]
