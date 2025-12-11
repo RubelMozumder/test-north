@@ -2,7 +2,7 @@ from nomad.config.models.north import NORTHTool
 from nomad.config.models.plugins import NorthToolEntryPoint
 
 tool = NORTHTool(
-    short_description='ghcr.io/rubelmozumder/test-north/jupyter:latest.',
+    short_description='Jupyter Notebook server in NOMAD NORTH.',
     # image='gitlab-registry.mpcdf.mpg.de/nomad-lab/north/xps:master',
     image='ghcr.io/rubelmozumder/test-north/jupyter:latest',
     description='Test SPM: Scanning Probe Microscopy Jupyter Notebook',
