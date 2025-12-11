@@ -4,19 +4,28 @@ ARG UV_VERSION=0.7
 ARG PLUGIN_NAME="PLUGIN"
 ARG PYTHON_VERSION=3.12
 
+FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv_image
+
 FROM quay.io/jupyter/scipy-notebook:${JUPYTER_TAG} AS scipy_notebook
+
+ENV UV_PROJECT_ENVIRONMENT=/opt/conda \
+    UV_FROZEN=1
 
 # https://github.com/hadolint/hadolint/wiki/DL4006
 # https://github.com/koalaman/shellcheck/wiki/SC3014
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+ENV DEFAULT_USER "jovyan"
 USER root
 
-# Define environment variables
-# With pre-exinsting NB_USER="jovyan" and NB_UID=100, NB_GID=1000
-ENV HOME=/home/${NB_USER} 
-ARG WORK_DIR=$HOME/work
-ARG PLUGIN_NAME
+# Define environment variable
+ENV HOME=/home/${DEFAULT_USER}
+
+COPY . ${HOME}/${PLUGIN_NAME}
+
+WORKDIR $HOME/${PLUGIN_NAME}
+
+COPY --from=uv_image /uv /bin/uv
 
 RUN apt-get update \
  && apt-get install --yes --quiet --no-install-recommends \
@@ -32,21 +41,20 @@ RUN apt-get update \
       # clean cache and logs
       && rm -rf /var/lib/apt/lists/* /var/log/* /var/tmp/* ~/.npm
 
-COPY . $WORK_DIR/$PLUGIN_NAME
 
-WORKDIR $WORK_DIR/$PLUGIN_NAME
-
-RUN pip install .[north_dependencies,nomad]
-
-RUN rm -rf ${WORK_DIR}/${PLUGIN_NAME}
-
-
-RUN fix-permissions "/home/${NB_USER}" \
-   && fix-permissions "${CONDA_DIR}" 
-
-USER ${NB_USER}
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync  --extra north_dependencies --extra nomad
 
 WORKDIR $HOME
 
+RUN rm -rf ${HOME}/${PLUGIN_NAME}
+
 # copy north examples
-COPY --chown=${NB_UID}:${NB_GID}  ./north_examples ${HOME}/north_examples
+COPY ./north_examples ${HOME}/north_examples
+
+RUN uid=$(id -u ${DEFAULT_USER}) && \
+    gid=$(id -g ${DEFAULT_USER}) && \
+    chown -R $uid:$gid ${HOME}
+
+# remove the PLUGIN folder to reduce image size
+USER ${DEFAULT_USER}
