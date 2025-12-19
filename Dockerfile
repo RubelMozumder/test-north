@@ -64,7 +64,7 @@ RUN jupyter lab build --dev-build=False --minimize=False
 # TODO: Uncomment the following 
 RUN fix-permissions "/home/${NB_USER}" \
    && fix-permissions "${CONDA_DIR}" 
-ENV PATH="/root/.local/bin/:$PATH"
+ENV PATH="${HOME}/.venv/bin/:$PATH"
 USER ${NB_USER}
 
 WORKDIR $HOME
