@@ -17,7 +17,7 @@ USER root
 
 # Define environment variables
 # With pre-exinsting NB_USER="jovyan" and NB_UID=100, NB_GID=1000
-ENV HOME=/home/${NB_USER} 
+ENV HOME=/home/${NB_USER}
 ENV CONDA_DIR=/opt/conda
 
 ARG PLUGIN_NAME
@@ -32,8 +32,9 @@ RUN apt-get update \
       curl \
       zip \
       unzip \
-      git 
+      git \
       # clean cache and logs
+      && rm -rf /var/lib/apt/lists/* /var/log/* /var/tmp/*
 
 # By default scipy-notebook:2025-10-20 has node 18
 # But, node > 20 needed for jupyterlab >= 4.4.10
@@ -49,17 +50,17 @@ ENV UV_PROJECT_ENVIRONMENT=${CONDA_DIR} \
     UV_LOCKED=1 \
     UV_LINK_MODE=copy \
     UV_NO_CACHE=1 \
-    # Use pyton from conda which is default for scipy-notebook
+    # Use python from conda which is default for scipy-notebook
     # so that uv pip and pip refer to the same python
     # If needed one can create another venv with 'uv venv'
-    UV_SYSTEM_PYTHON=1 
+    UV_SYSTEM_PYTHON=1
 
 # https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
 # Install dependencies
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --no-install-project --extra=north_dependencies --extra=nomad
+    uv sync --no-install-project --extra=north --extra=nomad
 
 
 COPY . $HOME/$PLUGIN_NAME
@@ -68,15 +69,14 @@ WORKDIR $HOME/$PLUGIN_NAME
 
 # Sync the project
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --no-editable --extra=north_dependencies --extra=nomad
+    uv sync --no-editable --extra=north --extra=nomad
 
 WORKDIR $HOME
 RUN rm -rf ${HOME}/${PLUGIN_NAME}
 
 RUN jupyter lab build --dev-build=False --minimize=False
 RUN fix-permissions "/home/${NB_USER}" \
-   && fix-permissions "${CONDA_DIR}" 
-ENV PATH="${HOME}/.venv/bin/:$PATH"
+   && fix-permissions "${CONDA_DIR}"
 USER ${NB_USER}
 
 WORKDIR $HOME

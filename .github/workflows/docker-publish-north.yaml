@@ -1,7 +1,7 @@
 name: Build and publish docker images
 on:
   push:
-    branches: ["main"]
+    branches: ["*"]
     tags: ["v*.*.*"]
 
 env:
@@ -49,6 +49,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository }}${{ env.IMAGE_PREFIX }}
+          # set latest tag for main branch and tags
           tags: |
             type=ref,event=tag
             type=raw,value=main,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}

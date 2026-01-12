@@ -42,7 +42,7 @@ dev = ["ruff",
        "structlog", 
        "coverage"]
 
-north_dependencies = [
+north = [
     "h5glance>=0.8",
     "h5grove>=1.1.0",
     "jupyterlab-h5web[full]>=7.1.1",
