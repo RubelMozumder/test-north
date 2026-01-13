@@ -32,9 +32,7 @@ RUN apt-get update \
       curl \
       zip \
       unzip \
-      git \
-      # clean cache and logs
-      && rm -rf /var/lib/apt/lists/* /var/log/* /var/tmp/*
+      git
 
 # By default scipy-notebook:2025-10-20 has node 18
 # But, node > 20 needed for jupyterlab >= 4.4.10
@@ -45,9 +43,10 @@ RUN apt-get install nodejs -y \
        # clean cache and logs
        && rm -rf /var/lib/apt/lists/* /var/log/* /var/tmp/* ~/.npm
 
+USER ${NB_USER}
+
 # uv env
 ENV UV_PROJECT_ENVIRONMENT=${CONDA_DIR} \
-    UV_LOCKED=1 \
     UV_LINK_MODE=copy \
     UV_NO_CACHE=1 \
     # Use python from conda which is default for scipy-notebook
@@ -60,24 +59,23 @@ ENV UV_PROJECT_ENVIRONMENT=${CONDA_DIR} \
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --no-install-project --extra=north --extra=nomad
+    uv sync --locked --no-install-project --extra=north --extra=nomad --inexact 
 
 
-COPY . $HOME/$PLUGIN_NAME
+COPY --chown=${NB_USER}:${NB_GID} . $HOME/$PLUGIN_NAME
 
 WORKDIR $HOME/$PLUGIN_NAME
 
 # Sync the project
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --no-editable --extra=north --extra=nomad
+    uv sync --locked --no-editable --extra=north --extra=nomad --inexact 
 
 WORKDIR $HOME
 RUN rm -rf ${HOME}/${PLUGIN_NAME}
 
 RUN jupyter lab build --dev-build=False --minimize=False
-RUN fix-permissions "/home/${NB_USER}" \
-   && fix-permissions "${CONDA_DIR}"
-USER ${NB_USER}
+RUN fix-permissions "/home/${NB_USER}" \ 
+    && fix-permissions "${CONDA_DIR}"
 
 WORKDIR $HOME
 

@@ -15,8 +15,8 @@ classifiers = [
 ]
 name = "test-north"
 description = "Nomad example template"
-# dyncamic = ["version"]
-version = "0.1.0"
+dynamic = ["version"]
+# version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [

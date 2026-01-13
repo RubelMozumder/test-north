@@ -4609,7 +4609,6 @@ wheels = [
 
 [[package]]
 name = "test-north"
-version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -4627,7 +4626,7 @@ dev = [
 nomad = [
     { name = "nomad-lab" },
 ]
-north-dependencies = [
+north = [
     { name = "h5glance" },
     { name = "h5grove" },
     { name = "ipywidgets" },
@@ -4641,21 +4640,21 @@ north-dependencies = [
 requires-dist = [
     { name = "click", specifier = ">=8.0.0" },
     { name = "coverage", marker = "extra == 'dev'" },
-    { name = "h5glance", marker = "extra == 'north-dependencies'", specifier = ">=0.8" },
-    { name = "h5grove", marker = "extra == 'north-dependencies'", specifier = ">=1.1.0" },
-    { name = "ipywidgets", marker = "extra == 'north-dependencies'" },
-    { name = "jupyterlab", marker = "extra == 'north-dependencies'" },
-    { name = "jupyterlab-h5web", extras = ["full"], marker = "extra == 'north-dependencies'", specifier = ">=7.1.1" },
-    { name = "nodejs", marker = "extra == 'north-dependencies'" },
+    { name = "h5glance", marker = "extra == 'north'", specifier = ">=0.8" },
+    { name = "h5grove", marker = "extra == 'north'", specifier = ">=1.1.0" },
+    { name = "ipywidgets", marker = "extra == 'north'" },
+    { name = "jupyterlab", marker = "extra == 'north'" },
+    { name = "jupyterlab-h5web", extras = ["full"], marker = "extra == 'north'", specifier = ">=7.1.1" },
+    { name = "nodejs", marker = "extra == 'north'" },
     { name = "nomad-lab", marker = "extra == 'nomad'", git = "https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git?rev=develop" },
-    { name = "punx", marker = "extra == 'north-dependencies'", specifier = ">=0.2.5" },
+    { name = "punx", marker = "extra == 'north'", specifier = ">=0.2.5" },
     { name = "pynxtools-spm", specifier = ">=0.2.0" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "python-magic-bin", marker = "sys_platform == 'win32'" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "structlog", marker = "extra == 'dev'" },
 ]
-provides-extras = ["nomad", "dev", "north-dependencies"]
+provides-extras = ["nomad", "dev", "north"]
 
 [[package]]
 name = "threadpoolctl"
