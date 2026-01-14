@@ -16,7 +16,11 @@ env:
   JUPYTER_VERSION: "2025-04-14"
   IMAGE_PREFIX: /jupyter
   SERVICES: jupyter
-
+  TEST_DATA_DIR: "$(pwd)/tests/data/north_test"
+  # Path w.r.t. TEST_DATA_DIR
+  TEST_NOTEBOOKS: |
+    - CommandLineDataconverter1.ipynb
+    - CommandLineDataconverter2.ipynb
 permissions:
   packages: write
   contents: read
@@ -40,10 +44,10 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           version: ${{ env.UV_VERSION }}
-      - name: Check uv.lock
+      - name: Check uv lock file
         run: |
           uv lock
-          if [[ `git diff origin/main -- uv.lock` ]]; then
+          if [[ ! `git diff --quiet -- uv.lock` ]]; then
             echo "uv.lock is not up to date. Please run 'uv lock' and commit the changes."
             exit 1
           fi
@@ -103,12 +107,22 @@ jobs:
         run: |
           docker load -i ${{ runner.temp }}/${{ env.SERVICES }}.tar
 
+
           RAW_TAGS="${{ needs.build.outputs.tags }}"
           FIRST_TAG=$(echo "$RAW_TAGS" | tr -s '[:space:]' '\n' | grep -v '^$' | head -n 1)
 
-          docker run \
-          --mount type=bind,src="$(pwd)/tests/data/north_test",dst="/home/jovyan/north_test" \
-          --rm $FIRST_TAG /bin/bash -c "jupyter execute \$HOME/north_test/CommandLineDataconverter.ipynb"
+          for nb in ${{ env.TEST_NOTEBOOKS }}; do
+            nb="${nb#- }"  # remove leading "- "
+            echo "Running notebook: $nb"
+
+            docker run \
+              --mount type=bind,src=${{ env.TEST_DATA_DIR }},dst="/home/jovyan/north_test" \
+              --rm "$FIRST_TAG" \
+              /bin/bash -c "jupyter execute \$HOME/north_test/$nb"
+          done
+          # docker run \
+          # --mount type=bind,src="$(pwd)/tests/data/north_test",dst="/home/jovyan/north_test" \
+          # --rm $FIRST_TAG /bin/bash -c "jupyter execute \$HOME/north_test/CommandLineDataconverter.ipynb"
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}

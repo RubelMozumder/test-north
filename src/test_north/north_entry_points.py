@@ -4,7 +4,7 @@ from nomad.config.models.plugins import NorthToolEntryPoint
 tool = NORTHTool(
     short_description='Jupyter Notebook server in NOMAD NORTH.',
     # image='gitlab-registry.mpcdf.mpg.de/nomad-lab/north/xps:master',
-    image='gitlab-registry.mpcdf.mpg.de/nomad-lab/north/xps:AddUVfunctionality',
+    image='ghcr.io/rubelmozumder/test-north/jupyter:pr-12',
     description='Test SPM: Scanning Probe Microscopy Jupyter Notebook',
     external_mounts=[],
     file_extensions=['ipynb', 'nxs', 'h5', 'hdf5'],
@@ -18,7 +18,7 @@ tool = NORTHTool(
     path_prefix='lab/tree',
     privileged=False,
     with_path=True,
-    display_name='SPM',
+    display_name='SPM-id-url-safe',
 )
 
-north_tool = NorthToolEntryPoint(id='spm-jupyter', north_tool=tool)
+north_tool = NorthToolEntryPoint(id='some_id', north_tool=tool)
