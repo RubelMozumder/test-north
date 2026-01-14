@@ -18,9 +18,8 @@ env:
   SERVICES: jupyter
   TEST_DATA_DIR: "$(pwd)/tests/data/north_test"
   # Path w.r.t. TEST_DATA_DIR
-  TEST_NOTEBOOKS: |
-    - CommandLineDataconverter1.ipynb
-    - CommandLineDataconverter2.ipynb
+  TEST_NOTEBOOKS: CommandLineDataconverter1.ipynb
+    CommandLineDataconverter2.ipynb
 permissions:
   packages: write
   contents: read
@@ -114,7 +113,7 @@ jobs:
           FIRST_TAG=$(echo "$RAW_TAGS" | tr -s '[:space:]' '\n' | grep -v '^$' | head -n 1)
 
           for nb in ${{ env.TEST_NOTEBOOKS }}; do
-            nb="${nb#- }"  # remove leading "- "
+            
             echo "Running notebook: $nb"
 
             docker run \
