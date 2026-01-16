@@ -19,7 +19,7 @@ env:
   SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST: "0.0.0+0.UNKNOWN"
   # Relative path to docker build context
   EXAMPLES_DIR: src/test_north/north_tools/test_jupyter/examples
-  TEST_DATA_DIR: $(pwd)/tests/data/north_test
+  TEST_DATA_DIR: $(pwd)/tests/data/north_test/examples
   # Path w.r.t. TEST_DATA_DIR multi-line in single string
   TEST_NOTEBOOKS: CommandLineDataconverter1.ipynb
     CommandLineDataconverter2.ipynb
