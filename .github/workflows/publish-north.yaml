@@ -13,13 +13,17 @@ env:
   REGISTRY: ghcr.io
   UV_VERSION: 0.9
   PYTHON_VERSION: 3.12
-  JUPYTER_VERSION: "2025-04-14"
+  JUPYTER_VERSION: 2025-04-14
   IMAGE_PREFIX: /jupyter
   SERVICES: jupyter
-  TEST_DATA_DIR: "$(pwd)/tests/data/north_test"
-  # Path w.r.t. TEST_DATA_DIR
+  SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST: "0.0.0+0.UNKNOWN"
+  # Relative path to docker build context
+  EXAMPLES_DIR: src/test_north/north_tools/test_jupyter/examples
+  TEST_DATA_DIR: $(pwd)/tests/data/north_test
+  # Path w.r.t. TEST_DATA_DIR multi-line in single string
   TEST_NOTEBOOKS: CommandLineDataconverter1.ipynb
     CommandLineDataconverter2.ipynb
+
 permissions:
   packages: write
   contents: read
@@ -37,7 +41,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: true
           submodules: true
+
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
@@ -48,10 +55,14 @@ jobs:
           uv lock
           if [[ `git diff uv.lock` ]]; then
             echo "uv.lock is not up to date. Please run 'uv lock' and commit the changes."
-            echo "Diff:"
-            git diff -- uv.lock
             exit 1
           fi
+      - name: Compute git version
+        id: git_version
+        run: |
+          VERSION=$(./scripts/get_git_version.sh)
+          echo "Computed version: $VERSION"
+          echo "SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST=$VERSION" >> "$GITHUB_ENV"
       - uses: docker/setup-buildx-action@v3
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
@@ -74,11 +85,13 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: Dockerfile
+          file: docker/Dockerfile.jupyter
           build-args: |
             UV_VERSION=${{ env.UV_VERSION }}
             PYTHON_VERSION=${{ env.PYTHON_VERSION }}
             JUPYTER_VERSION=${{ env.JUPYTER_VERSION }}
+            SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST=${{ env.SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST }}
+            EXAMPLES_DIR=${{ env.EXAMPLES_DIR }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: false
@@ -104,26 +117,22 @@ jobs:
           name: jupyter-image
           path: ${{ runner.temp }}
           pattern: "!*.dockerbuild" # warning at https://github.com/docker/build-push-action?tab=readme-ov-file
+
       - name: Load and test in Jupyter container
         run: |
           docker load -i ${{ runner.temp }}/${{ env.SERVICES }}.tar
-
 
           RAW_TAGS="${{ needs.build.outputs.tags }}"
           FIRST_TAG=$(echo "$RAW_TAGS" | tr -s '[:space:]' '\n' | grep -v '^$' | head -n 1)
 
           for nb in ${{ env.TEST_NOTEBOOKS }}; do
-            
             echo "Running notebook: $nb"
-
             docker run \
               --mount type=bind,src=${{ env.TEST_DATA_DIR }},dst="/home/jovyan/north_test" \
               --rm "$FIRST_TAG" \
               /bin/bash -c "jupyter execute \$HOME/north_test/$nb"
           done
-          # docker run \
-          # --mount type=bind,src="$(pwd)/tests/data/north_test",dst="/home/jovyan/north_test" \
-          # --rm $FIRST_TAG /bin/bash -c "jupyter execute \$HOME/north_test/CommandLineDataconverter.ipynb"
+
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}

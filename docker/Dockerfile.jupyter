@@ -1,8 +1,10 @@
-
 ARG JUPYTER_TAG=2025-10-20
 ARG UV_VERSION=0.9
 ARG PLUGIN_NAME="PLUGIN"
 ARG PYTHON_VERSION=3.12
+ARG SETUPTOOLS_SCM_PRETEND_VERSION_FOR_TEST_NORTH="0.0.0+0.gunknown"
+# Relative path to docker build context
+ARG EXAMPLES_DIR="src/test_north/north_tools/test_jupyter/examples"
 FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv_stage
 
 FROM quay.io/jupyter/scipy-notebook:${JUPYTER_TAG} AS scipy_notebook
@@ -45,6 +47,8 @@ RUN apt-get install nodejs -y \
 
 USER ${NB_USER}
 
+ARG SETUPTOOLS_SCM_PRETEND_VERSION_FOR_TEST_NORTH
+
 # uv env
 ENV UV_PROJECT_ENVIRONMENT=${CONDA_DIR} \
     UV_LINK_MODE=copy \
@@ -52,36 +56,31 @@ ENV UV_PROJECT_ENVIRONMENT=${CONDA_DIR} \
     # Use python from conda which is default for scipy-notebook
     # so that uv pip and pip refer to the same python
     # If needed one can create another venv with 'uv venv'
-    UV_SYSTEM_PYTHON=1
+    UV_SYSTEM_PYTHON=1 \
+    SETUPTOOLS_SCM_PRETEND_VERSION_FOR_TEST_NORTH=${SETUPTOOLS_SCM_PRETEND_VERSION_FOR_TEST_NORTH}
 
+COPY --chown=${NB_USER}:${NB_GID} . ${HOME}/${PLUGIN_NAME}
+
+WORKDIR ${HOME}/${PLUGIN_NAME}
+
+# RUN export SETUPTOOLS_SCM_PRETEND_VERSION=${SETUPTOOLS_SCM_PRETEND_VERSION}
 # https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
 # Install dependencies
 RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --locked --no-install-project --extra=north --extra=nomad --inexact 
+    uv sync --locked --no-editable --extra=north --extra=nomad --inexact
 
-
-COPY --chown=${NB_USER}:${NB_GID} . $HOME/$PLUGIN_NAME
-
-WORKDIR $HOME/$PLUGIN_NAME
-
-# Sync the project
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --no-editable --extra=north --extra=nomad --inexact 
-
-WORKDIR $HOME
+WORKDIR ${HOME}
 RUN rm -rf ${HOME}/${PLUGIN_NAME}
 
-RUN jupyter lab build --dev-build=False --minimize=False
-RUN fix-permissions "/home/${NB_USER}" \ 
+RUN jupyter lab build --dev-build=False --minimize=False && \
+    fix-permissions "/home/${NB_USER}" \ 
     && fix-permissions "${CONDA_DIR}"
 
-WORKDIR $HOME
+WORKDIR ${HOME}
 
+ARG EXAMPLES_DIR
 # copy north examples
-COPY --chown=${NB_UID}:${NB_GID}  ./north_examples ${HOME}/examples
+COPY --chown=${NB_UID}:${NB_GID}  ${EXAMPLES_DIR} ${HOME}/examples
 
-# groups: cannot find name for group ID 11320
 RUN touch ${HOME}/.hushlogin
 
