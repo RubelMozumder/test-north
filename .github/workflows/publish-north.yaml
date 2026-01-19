@@ -16,14 +16,13 @@ env:
   JUPYTER_VERSION: 2025-04-14
   IMAGE_PREFIX: /jupyter
   SERVICES: jupyter
-  NORTH_TOOL_DIR: src/test_north/north_tools/test_jupyter
-  # Relative path to docker build context
-  EXAMPLES_DIR: src/test_north/north_tools/test_jupyter/examples
+  NORTH_TOOL_DIR: src/{{ cookiecutter.module_name }}/north_tools/{{ cookiecutter.module_name }}_jupyter
+  # With respect to NORTH_TOOL_DIR
+  EXAMPLES_DIR: examples
   # Absolute path to test data directory
-  TEST_DATA_DIR: src/test_north/north_tools/test_jupyter/test_data
+  TEST_DATA_DIR: examples
   # Path w.r.t. TEST_DATA_DIR multi-line in single string
-  TEST_NOTEBOOKS: CommandLineDataconverter1.ipynb
-    CommandLineDataconverter2.ipynb
+  TEST_NOTEBOOKS: CommandLine.ipynb
 
 permissions:
   packages: write
@@ -59,12 +58,6 @@ jobs:
             echo "requirements-jupyter.txt is not up to date. Please run 'compile_jupyter_requirements.sh' and commit the changes."
             exit 1
           fi
-      - name: Compute git version
-        id: git_version
-        run: |
-          VERSION=$(./scripts/get_git_version.sh)
-          echo "Computed version: $VERSION"
-          echo "SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST=$VERSION" >> "$GITHUB_ENV"
       - uses: docker/setup-buildx-action@v3
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
@@ -91,7 +84,7 @@ jobs:
           build-args: |
             UV_VERSION=${{ env.UV_VERSION }}
             JUPYTER_VERSION=${{ env.JUPYTER_VERSION }}
-            EXAMPLES_DIR=${{ env.EXAMPLES_DIR }}
+            EXAMPLES_DIR=${{ env.NORTH_TOOL_DIR }}/${{ env.EXAMPLES_DIR }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: false
@@ -128,7 +121,7 @@ jobs:
           for nb in ${{ env.TEST_NOTEBOOKS }}; do
             echo "Running notebook: $nb"
             docker run \
-              --mount type=bind,src=./${{ env.TEST_DATA_DIR }},dst="/home/jovyan/north_test" \
+              --mount type=bind,src=./${{ env.NORTH_TOOL_DIR }}/${{ env.TEST_DATA_DIR }},dst="/home/jovyan/north_test" \
               --rm "$FIRST_TAG" \
               /bin/bash -c "jupyter execute \$HOME/north_test/$nb"
           done
