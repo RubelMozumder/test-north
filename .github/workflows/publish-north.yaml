@@ -17,11 +17,11 @@ env:
   IMAGE_PREFIX: /jupyter
   SERVICES: jupyter
   SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST: "0.0.0+0.UNKNOWN"
-  NORTH_TOOL_DIR: $(pwd)/src/test_north/north_tools/test_jupyter
+  NORTH_TOOL_DIR: src/test_north/north_tools/test_jupyter
   # Relative path to docker build context
   EXAMPLES_DIR: src/test_north/north_tools/test_jupyter/examples
   # Absolute path to test data directory
-  TEST_DATA_DIR: $(pwd)/src/test_north/north_tools/test_jupyter/test_data
+  TEST_DATA_DIR: src/test_north/north_tools/test_jupyter/test_data
   # Path w.r.t. TEST_DATA_DIR multi-line in single string
   TEST_NOTEBOOKS: CommandLineDataconverter1.ipynb
     CommandLineDataconverter2.ipynb
@@ -54,8 +54,8 @@ jobs:
           version: ${{ env.UV_VERSION }}
       - name: Check Jupyter Requirements
         run: |
-          chmod +x ./src/test_north/north_tools/test_jupyter/compile_jupyter_requirements.sh
-          ./src/test_north/north_tools/test_jupyter/compile_jupyter_requirements.sh
+          chmod +x ${{ env.NORTH_TOOL_DIR }}/compile_jupyter_requirements.sh
+          ./${{ env.NORTH_TOOL_DIR }}/compile_jupyter_requirements.sh
           if [[ `git diff requirements-jupyter.txt` ]]; then
             echo "requirements-jupyter.txt is not up to date. Please run 'compile_jupyter_requirements.sh' and commit the changes."
             exit 1
@@ -88,7 +88,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: docker/Dockerfile.jupyter
+          file: ${{ env.NORTH_TOOL_DIR }}/Dockerfile.jupyter
           build-args: |
             UV_VERSION=${{ env.UV_VERSION }}
             JUPYTER_VERSION=${{ env.JUPYTER_VERSION }}
@@ -130,7 +130,7 @@ jobs:
           for nb in ${{ env.TEST_NOTEBOOKS }}; do
             echo "Running notebook: $nb"
             docker run \
-              --mount type=bind,src=${{ env.TEST_DATA_DIR }},dst="/home/jovyan/north_test" \
+              --mount type=bind,src=./${{ env.TEST_DATA_DIR }},dst="/home/jovyan/north_test" \
               --rm "$FIRST_TAG" \
               /bin/bash -c "jupyter execute \$HOME/north_test/$nb"
           done
