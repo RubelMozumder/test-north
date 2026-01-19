@@ -16,13 +16,14 @@ env:
   JUPYTER_VERSION: 2025-04-14
   IMAGE_PREFIX: /jupyter
   SERVICES: jupyter
-  NORTH_TOOL_DIR: src/{{ cookiecutter.module_name }}/north_tools/{{ cookiecutter.module_name }}_jupyter
+  NORTH_TOOL_DIR: src/test_north/north_tools/test_jupyter
   # With respect to NORTH_TOOL_DIR
   EXAMPLES_DIR: examples
   # Absolute path to test data directory
   TEST_DATA_DIR: examples
   # Path w.r.t. TEST_DATA_DIR multi-line in single string
-  TEST_NOTEBOOKS: CommandLine.ipynb
+  TEST_NOTEBOOKS: CommandLineDataconverter1.ipynb
+    CommandLineDataconverter2.ipynb
 
 permissions:
   packages: write
