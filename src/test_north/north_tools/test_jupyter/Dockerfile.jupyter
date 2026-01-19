@@ -2,7 +2,7 @@ ARG JUPYTER_TAG=2025-10-20
 ARG BASE_JUPYTER=quay.io/jupyter/scipy-notebook
 ARG UV_VERSION=0.9
 ARG PLUGIN_NAME="PLUGIN"
-ARG SETUPTOOLS_SCM_PRETEND_VERSION_FOR_TEST_NORTH="0.0.0+0.gunknown"
+ARG NORTH_TOOL_DIR="src/test_north/north_tools/test_jupyter"
 # Relative path to docker build context
 ARG EXAMPLES_DIR="src/test_north/north_tools/test_jupyter/examples"
 FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv_stage
@@ -24,6 +24,7 @@ ENV CONDA_DIR=/opt/conda
 ARG PLUGIN_NAME
 ARG SETUPTOOLS_SCM_PRETEND_VERSION_FOR_TEST_NORTH
 ARG EXAMPLES_DIR
+ARG NORTH_TOOL_DIR
 
 RUN apt-get update \
  && apt-get install --yes --quiet --no-install-recommends \
@@ -57,8 +58,7 @@ ENV UV_PROJECT_ENVIRONMENT=${CONDA_DIR} \
     # Use python from conda which is default for scipy-notebook
     # so that uv pip and pip refer to the same python
     # If needed one can create another venv with 'uv venv'
-    UV_SYSTEM_PYTHON=1 \
-    SETUPTOOLS_SCM_PRETEND_VERSION_FOR_TEST_NORTH=${SETUPTOOLS_SCM_PRETEND_VERSION_FOR_TEST_NORTH}
+    UV_SYSTEM_PYTHON=1
 
 COPY --chown=${NB_USER}:${NB_GID} . ${HOME}/${PLUGIN_NAME}
 
@@ -68,19 +68,19 @@ WORKDIR ${HOME}/${PLUGIN_NAME}
 # https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
 # Install dependencies
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --no-editable --extra=north --extra=nomad --inexact
+    uv pip install . --requirements ${NORTH_TOOL_DIR}/requirements-jupyter.txt
 
 WORKDIR ${HOME}
 RUN rm -rf ${HOME}/${PLUGIN_NAME}
 
-RUN jupyter lab build --dev-build=False --minimize=False && \
-    fix-permissions "/home/${NB_USER}" \ 
-    && fix-permissions "${CONDA_DIR}"
+# RUN jupyter lab build --dev-build=False --minimize=False && \
+#     fix-permissions "/home/${NB_USER}" \ 
+#     && fix-permissions "${CONDA_DIR}"
 
-WORKDIR ${HOME}
+# WORKDIR ${HOME}
 
-# copy north examples
-COPY --chown=${NB_UID}:${NB_GID}  ${EXAMPLES_DIR} ${HOME}/examples
+# # copy north examples
+# COPY --chown=${NB_UID}:${NB_GID}  ${EXAMPLES_DIR} ${HOME}/examples
 
-RUN touch ${HOME}/.hushlogin
+# RUN touch ${HOME}/.hushlogin
 

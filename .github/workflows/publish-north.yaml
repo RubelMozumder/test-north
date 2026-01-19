@@ -16,7 +16,6 @@ env:
   JUPYTER_VERSION: 2025-04-14
   IMAGE_PREFIX: /jupyter
   SERVICES: jupyter
-  SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST: "0.0.0+0.UNKNOWN"
   NORTH_TOOL_DIR: src/test_north/north_tools/test_jupyter
   # Relative path to docker build context
   EXAMPLES_DIR: src/test_north/north_tools/test_jupyter/examples
@@ -92,7 +91,6 @@ jobs:
           build-args: |
             UV_VERSION=${{ env.UV_VERSION }}
             JUPYTER_VERSION=${{ env.JUPYTER_VERSION }}
-            SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST=${{ env.SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST }}
             EXAMPLES_DIR=${{ env.EXAMPLES_DIR }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
