@@ -1,14 +1,13 @@
 ARG JUPYTER_TAG=2025-10-20
+ARG BASE_JUPYTER=quay.io/jupyter/scipy-notebook
 ARG UV_VERSION=0.9
 ARG PLUGIN_NAME="PLUGIN"
-ARG PYTHON_VERSION=3.12
 ARG SETUPTOOLS_SCM_PRETEND_VERSION_FOR_TEST_NORTH="0.0.0+0.gunknown"
 # Relative path to docker build context
 ARG EXAMPLES_DIR="src/test_north/north_tools/test_jupyter/examples"
 FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv_stage
 
-FROM quay.io/jupyter/scipy-notebook:${JUPYTER_TAG} AS scipy_notebook
-
+FROM ${BASE_JUPYTER}:${JUPYTER_TAG} AS scipy_notebook
 # https://github.com/hadolint/hadolint/wiki/DL4006
 # https://github.com/koalaman/shellcheck/wiki/SC3014
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -23,6 +22,8 @@ ENV HOME=/home/${NB_USER}
 ENV CONDA_DIR=/opt/conda
 
 ARG PLUGIN_NAME
+ARG SETUPTOOLS_SCM_PRETEND_VERSION_FOR_TEST_NORTH
+ARG EXAMPLES_DIR
 
 RUN apt-get update \
  && apt-get install --yes --quiet --no-install-recommends \
@@ -78,7 +79,6 @@ RUN jupyter lab build --dev-build=False --minimize=False && \
 
 WORKDIR ${HOME}
 
-ARG EXAMPLES_DIR
 # copy north examples
 COPY --chown=${NB_UID}:${NB_GID}  ${EXAMPLES_DIR} ${HOME}/examples
 

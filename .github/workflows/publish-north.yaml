@@ -17,10 +17,11 @@ env:
   IMAGE_PREFIX: /jupyter
   SERVICES: jupyter
   SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST: "0.0.0+0.UNKNOWN"
+  NORTH_TOOL_DIR: $(pwd)/src/test_north/north_tools/test_jupyter
   # Relative path to docker build context
   EXAMPLES_DIR: src/test_north/north_tools/test_jupyter/examples
   # Absolute path to test data directory
-  TEST_DATA_DIR: $(pwd)/tests/data/north_test
+  TEST_DATA_DIR: $(pwd)/src/test_north/north_tools/test_jupyter/test_data
   # Path w.r.t. TEST_DATA_DIR multi-line in single string
   TEST_NOTEBOOKS: CommandLineDataconverter1.ipynb
     CommandLineDataconverter2.ipynb
@@ -51,11 +52,12 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           version: ${{ env.UV_VERSION }}
-      - name: Check uv lock file
+      - name: Check Jupyter Requirements
         run: |
-          uv lock
-          if [[ `git diff uv.lock` ]]; then
-            echo "uv.lock is not up to date. Please run 'uv lock' and commit the changes."
+          chmod +x ./src/test_north/north_tools/test_jupyter/compile_jupyter_requirements.sh
+          ./src/test_north/north_tools/test_jupyter/compile_jupyter_requirements.sh
+          if [[ `git diff requirements-jupyter.txt` ]]; then
+            echo "requirements-jupyter.txt is not up to date. Please run 'compile_jupyter_requirements.sh' and commit the changes."
             exit 1
           fi
       - name: Compute git version
@@ -89,7 +91,6 @@ jobs:
           file: docker/Dockerfile.jupyter
           build-args: |
             UV_VERSION=${{ env.UV_VERSION }}
-            PYTHON_VERSION=${{ env.PYTHON_VERSION }}
             JUPYTER_VERSION=${{ env.JUPYTER_VERSION }}
             SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST=${{ env.SETUPTOOLS_SCM_PRETEND_VERSION_FOR_NORTH_TEST }}
             EXAMPLES_DIR=${{ env.EXAMPLES_DIR }}

@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Find tagged version or construct dynamic version from latest tag, number of commits since tag and git hash
-
-# set -euo pipefail
+set -euo pipefail
 
 git_semver() {
   # Tagged version

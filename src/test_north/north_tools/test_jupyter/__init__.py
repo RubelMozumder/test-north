@@ -18,7 +18,7 @@ tool = NORTHTool(
     path_prefix='lab/tree',
     privileged=False,
     with_path=True,
-    display_name='Test_Jupyter',
+    display_name='NOMAD-north-Jupyter',
 )
 
 north_tool = NorthToolEntryPoint(id='some_id', north_tool=tool)
