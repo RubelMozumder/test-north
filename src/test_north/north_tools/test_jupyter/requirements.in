@@ -4,4 +4,3 @@
     jupyterlab
     punx>=0.2.5
     ipywidgets
-    nodejs
