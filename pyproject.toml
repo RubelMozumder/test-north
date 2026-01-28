@@ -15,8 +15,8 @@ classifiers = [
 ]
 name = "test-north"
 description = "Nomad example template"
-# dyncamic = ["version"]
-version = "0.1.0"
+dynamic = ["version"]
+# version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
@@ -36,21 +36,11 @@ dependencies = [
 Repository = "https://github.com/RubelMozumder/test-north"
 
 [project.optional-dependencies]
-nomad = [ "nomad-lab@git+https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git@develop#egg=nomad",]
+nomad = [ "nomad-lab@git+https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git@develop#egg=nomad"]
 dev = ["ruff", 
        "pytest", 
        "structlog", 
        "coverage"]
-
-north_dependencies = [
-    "h5glance>=0.8",
-    "h5grove>=1.1.0",
-    "jupyterlab-h5web[full]>=7.1.1",
-    "jupyterlab",
-    "punx>=0.2.5",
-    "ipywidgets",
-    "nodejs",
-]
 
 [project.scripts]
 print_hello = "test_north.utils.utils:hello"
@@ -134,7 +124,7 @@ schema_package_entry_point = "test_north.schema_packages:schema_package_entry_po
 normalizer_entry_point = "test_north.normalizers:normalizer_entry_point"
 app_entry_point = "test_north.apps:app_entry_point"
 example_upload_entry_point = "test_north.example_uploads:example_upload_entry_point"
-north_tool = "test_north.north_entry_points:north_tool"
+north_tool = "test_north.north_tools.test_jupyter:north_tool"
 # north_tool2 = "test_north.north_entry_points:north_tool2"
 # north_tool3 = "test_north.north_entry_points:north_tool3"
 # north_tool4 = "test_north.north_entry_points:north_tool4"
