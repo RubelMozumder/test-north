@@ -1,8 +1,7 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
+requires = ["setuptools>=61.0.0", "setuptools-scm>=8.0"]
 build-backend = "setuptools.build_meta"
-[tool.setuptools_scm]
-fallback_version = "0.0"
+
 [project]
 classifiers = [
     "Intended Audience :: Developers",
@@ -15,36 +14,47 @@ classifiers = [
 ]
 name = "test-north"
 description = "Nomad example template"
-dynamic = ["version"]
-# version = "0.1.0"
+version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
-    { name = "John Doe", email = "rubel.mozumder@physik.hu-berlin.de" },
+    { name = "John Doe", email = "john.doe@physik.hu-berlin.de" },
 ]
 maintainers = [
-    { name = "John Doe", email = "rubel.mozumder@physik.hu-berlin.de" },
+    { name = "John Doe", email = "john.doe@physik.hu-berlin.de" },
 ]
 license = { file = "LICENSE" }
 dependencies = [
-    "python-magic-bin; sys_platform == 'win32'",
-    "pynxtools-spm>=0.2.0",
-    "click>=8.0.0",
+    "nomad-lab>=1.4.1",
+    "pydantic",
+    "temporalio"
 ]
 
 [project.urls]
-Repository = "https://github.com/RubelMozumder/test-north"
+Repository = "https://github.com/FAIRmat-NFDI/test-north"
 
 [project.optional-dependencies]
-nomad = [ "nomad-lab@git+https://gitlab.mpcdf.mpg.de/nomad-lab/nomad-FAIR.git@develop#egg=nomad"]
-dev = ["ruff", 
-       "pytest", 
-       "structlog", 
-       "coverage"]
+dev = [
+    "ruff",
+    "pytest",
+    "structlog",
+    "mkdocs",
+    "mkdocs-material==8.1.1",
+    "pymdown-extensions",
+    "mkdocs-click",
+    "pytest-asyncio",
+]
+[dependency-groups]
+north = [
+    "jupyterlab",
+    "ipywidgets",
+]
 
-[project.scripts]
-print_hello = "test_north.utils.utils:hello"
-
+[tool.uv]
+extra-index-url = [
+  "https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple",
+]
+    
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
 exclude = [
@@ -93,12 +103,16 @@ select = [
 ignore = [
     "F403", # 'from module import *' used; unable to detect undefined names
     "PLC0415", # `import` should be at the top-level of a file
+    "E501", # line too long
 ]
 
 fixable = ["ALL"]
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["PLC0415"] # import-outside-top-level
 
 # this is entirely optional, you can remove this if you wish to
 [tool.ruff.format]
@@ -114,6 +128,8 @@ skip-magic-trailing-comma = false
 # Like Black, automatically detect the appropriate line ending.
 line-ending = "auto"
 
+[tool.setuptools]
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -124,10 +140,8 @@ schema_package_entry_point = "test_north.schema_packages:schema_package_entry_po
 normalizer_entry_point = "test_north.normalizers:normalizer_entry_point"
 app_entry_point = "test_north.apps:app_entry_point"
 example_upload_entry_point = "test_north.example_uploads:example_upload_entry_point"
-north_tool = "test_north.north_tools.test_jupyter:north_tool"
-# north_tool2 = "test_north.north_entry_points:north_tool2"
-# north_tool3 = "test_north.north_entry_points:north_tool3"
-# north_tool4 = "test_north.north_entry_points:north_tool4"
+action_entry_point = "test_north.actions:simple_action_entry_point"
+north_entry_point = "test_north.north_tools:north_entry_point"
 [tool.cruft]
 # Avoid updating workflow files, this leads to permissions issues
 skip = [".github/*"]

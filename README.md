@@ -1,6 +1,3 @@
-![](https://github.com/RubelMozumder/test-north/actions/workflows/pytest.yml/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/RubelMozumder/test-north/badge.svg?branch=gitHubWorkflow)](https://coveralls.io/github/RubelMozumder/test-north?branch=main)
-
 # test-north
 
 Nomad example template
@@ -11,7 +8,7 @@ This `nomad` plugin was generated with `Cookiecutter` along with `@nomad`'s [`co
 
 If you want to develop locally this plugin, clone the project and in the plugin folder, create a virtual environment (you can use Python 3.10, 3.11 or 3.12):
 ```sh
-git clone https://github.com/foo/test-north.git
+git clone https://github.com/FAIRmat-NFDI/test-north.git
 cd test-north
 python3.11 -m venv .pyenv
 . .pyenv/bin/activate
@@ -111,6 +108,15 @@ Read the [NOMAD plugin documentation](https://nomad-lab.eu/prod/v1/staging/docs/
 
 We now recommend using the dedicated [`nomad-distro-dev`](https://github.com/FAIRmat-NFDI/nomad-distro-dev) repository to simplify the process. Please refer to that repository for detailed instructions.
 
+## Publish note
+In the [GitHub actions workflow](./.github/workflows/publish.yml) for publishing the test-north plugin to PyPI, we commented out the `deploy` job . If you want to publish the plugin to `PyPI`, you need to set up your project in `PyPI`. There are several online tutorials on publishing a Python package to PyPI, e.g., [How to Publish a Python Package to PyPI](https://realpython.com/pypi-publish-python-package/). After that, you can uncomment the `deploy` job in the workflow file and push the changes to GitHub. The workflow will be triggered and the package will be published to `PyPI` when you create a new release on GitHub.
+
+In our Python package publishing workflow, before building the package, we update the image tag in the [NORTHTool](./src/test_north/north_tools/test_jupyter/__init__.py) entry point to the latest release version of the image (e.g., `v0.1.5`), and then publish the package to PyPI.
+
+However, the updated image tag in `NORTHTool` is not pushed back to the GitHub repository. Therefore, the image tag in the GitHub repository always remains set to `main`, even when you check out a specific release tag. For this reason, we recommend installing the plugin from [PyPI](https://pypi.org/), where the entry point always contains the correct image tag corresponding to the release.
+
+If you download a ZIP file of a specific release from GitHub, the image tag in the entry point will still be set to `main`, which is not correct. In that case, you can either manually update the image tag in the entry point to the correct release version (e.g., `v0.1.5`), or install the plugin directly from PyPI.
+
 ### Template update
 
 We use [`cruft`](https://github.com/cruft/cruft) to update the project based on template changes. To run the check for updates locally, run `cruft update` in the root of the project. More details see the instructions on [`cruft` website](https://cruft.github.io/cruft/#updating-a-project).
@@ -118,4 +124,4 @@ We use [`cruft`](https://github.com/cruft/cruft) to update the project based on 
 ## Main contributors
 | Name | E-mail     |
 |------|------------|
-| John Doe | [rubel.mozumder@physik.hu-berlin.de](mailto:rubel.mozumder@physik.hu-berlin.de)
+| John Doe | [john.doe@physik.hu-berlin.de](mailto:john.doe@physik.hu-berlin.de)
